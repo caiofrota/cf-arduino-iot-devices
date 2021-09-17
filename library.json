@@ -1,0 +1,20 @@
+{
+    "name": "CF Arduino IoT Devices",
+    "keywords": "cf, arduino, cpp, iot, devices",
+    "description": "CF Arduino IoT Devices.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/caiofrota/cf-arduino-iot-devices"
+    },
+    "authors": [
+        {
+            "name": "caiofrota",
+            "url": "https://github.com/caiofrota"
+        }
+    ],
+    "contributors": [
+    ],
+    "version": "1.0.0",
+    "examples": "examples/*/*.ino",
+    "frameworks": "arduino"
+}
