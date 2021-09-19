@@ -35,7 +35,7 @@ CFWiFiManagerHelper _cfWiFiManager;                                             
 CFThingsBoardHelper _cfThingsBoard(APP_CODE, APP_VERSION);                      // CF WiFiManager Helper.
 
 // Create a sensor object.
-CFSoilMoisture _soilMoisture(PIN_SOILMOISTURE);                                 // CF soil moisture sensor.
+CFSoilMoistureHelper _soilMoisture(PIN_SOILMOISTURE);                           // CF soil moisture sensor.
 
 void setup() {
     // Start Serial.
@@ -54,6 +54,7 @@ void setup() {
 
     // Config ThingsBoard.
     _cfThingsBoard.setLocalIP(_cfWiFiManager.getLocalIP());
+    _cfThingsBoard.setOnThingsBoardConnectCallback(onThingsBoardConnectCallback);
 }
 
 void loop() {
@@ -79,4 +80,49 @@ void onSaveParametersCallback() {
     
     _soilMoisture.setRawDryValue(_cfWiFiManager.getParameter("p_soilm_dryval").toInt());
     _soilMoisture.setRawWetValue(_cfWiFiManager.getParameter("p_soilm_wetval").toInt());
+}
+
+/**
+ * Callback to be called when receive any attribute update from ThingsBoard.
+ */
+void ATTRCallback(const RPC_Data &data) {
+    Logger::notice("Attr received.");
+
+    // Update attributes.
+    _cfWiFiManager.setParameter("p_device_name", data["p_device_name"]);
+    _cfWiFiManager.setParameter("attr_soilm_dryval", data["p_device_name"]);
+    _cfWiFiManager.setParameter("p_soilm_wetval", data["p_device_name"]);
+}
+
+/**
+ * Callback to be called when receive default RPC from ThingsBoard.
+ */
+void RPCDefaultCallback(const RPC_Data &data, RPC_Response &resp) {
+    Logger::notice("RPC default received.");
+    
+    // Process data.
+    StaticJsonDocument<200> doc;
+    deserializeJson(doc, data);
+    
+    int value = doc["value"];
+    
+    // Return value.
+    JsonObject r  = resp.to<JsonObject>();
+    r["value"] = value;
+}
+
+/**
+ * Callbacks list to be called when receive a RPC from ThingsBoard.
+ */
+int RPCCallbackListSize = 1;
+RPC_Callback RPCCallbackList[] = {
+    { "default",              RPCDefaultCallback }
+};
+
+/**
+ * Callback to subscribe to ThingsBoard RPC/Attr.
+ */
+void onThingsBoardConnectCallback() {
+    _cfThingsBoard.ATTRSubscribe(ATTRCallback);
+    _cfThingsBoard.RPCSubscribe(RPCCallbackList, RPCCallbackListSize);
 }

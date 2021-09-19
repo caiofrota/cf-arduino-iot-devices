@@ -60,3 +60,46 @@ void onSaveParametersCallback() {
     _cfThingsBoard.setToken(_cfWiFiManager.getParameter("p_server_token"));
     _cfThingsBoard.setAttributeValue("attr_device_name", _cfWiFiManager.getParameter("p_device_name"));
 }
+
+/**
+ * Callback to be called when receive any attribute update from ThingsBoard.
+ */
+void ATTRCallback(const RPC_Data &data) {
+    Logger::notice("Attr received.");
+
+    // Update attributes.
+    _cfWiFiManager.setParameter("p_device_name", data["p_device_name"]);
+}
+
+/**
+ * Callback to be called when receive default RPC from ThingsBoard.
+ */
+void RPCDefaultCallback(const RPC_Data &data, RPC_Response &resp) {
+    Logger::notice("RPC default received.");
+    
+    // Process data.
+    StaticJsonDocument<200> doc;
+    deserializeJson(doc, data);
+    
+    int value = doc["value"];
+    
+    // Return value.
+    JsonObject r  = resp.to<JsonObject>();
+    r["value"] = value;
+}
+
+/**
+ * Callbacks list to be called when receive a RPC from ThingsBoard.
+ */
+int RPCCallbackListSize = 1;
+RPC_Callback RPCCallbackList[] = {
+    { "default",              RPCDefaultCallback }
+};
+
+/**
+ * Callback to subscribe to ThingsBoard RPC/Attr.
+ */
+void onThingsBoardConnectCallback() {
+    _cfThingsBoard.ATTRSubscribe(ATTRCallback);
+    _cfThingsBoard.RPCSubscribe(RPCCallbackList, RPCCallbackListSize);
+}

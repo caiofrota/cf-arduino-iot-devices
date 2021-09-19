@@ -17,14 +17,17 @@ begin                                   KEYWORD2
 loop 	                                KEYWORD2
 setCustomParameters                     KEYWORD2
 getParameter                            KEYWORD2
+setParameter                            KEYWORD2
 getSSID                                 KEYWORD2
 getLocalIP                              KEYWORD2
 setOnSaveParametersCallback             KEYWORD2
+ATTRSubscribe                           KEYWORD2
 setServerURL                            KEYWORD2
 setToken                                KEYWORD2
 setLocalIP                              KEYWORD2
 setTelemetryValue                       KEYWORD2
 setAttributeValue                       KEYWORD2
+setOnThingsBoardConnectCallback         KEYWORD2
 
 ##################################################
 # Constants (LITERAL1)

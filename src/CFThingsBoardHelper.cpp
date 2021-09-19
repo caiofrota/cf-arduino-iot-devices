@@ -29,10 +29,6 @@ void CFThingsBoardHelper::loop() {
     if (!_thingsBoard.connected()) {
         // Check the last attempt.
         if (_tLastSent == 0 || (millis() - _tLastSent) > _ttRetry) {
-            // In case of lose connection, set variables to indicate _thingsBoard is disconnected.
-            //_rpcSubscribed = false;
-            //_attSubscribed = false;
-
             // Connect to ThingsBoard.
             Logger::notice("Connecting to Things Board node.");
             Logger::verbose("ServerURL: " + _serverURL);
@@ -50,6 +46,11 @@ void CFThingsBoardHelper::loop() {
                 _thingsBoard.sendAttributeString("app_version", _appVersion.c_str());
                 _thingsBoard.sendAttributeString("device_chip_id", espChipId);
                 _thingsBoard.sendAttributeString("device_local_ip", _localIP.c_str());
+
+                // Call on ThingsBoard connect.
+                if (_onThingsBoardConnectCallback) {
+                    _onThingsBoardConnectCallback();
+                }
             } else {
                 Logger::warning("Fail connecting Things Board. Retrying in " + String(_ttRetry / 1000) + " second(s).");
                 _tLastSent = millis();
@@ -60,25 +61,6 @@ void CFThingsBoardHelper::loop() {
             return;
         }
     }
-    /*
-    // Check attributes subscription.
-    if (!_attSubscribed) {
-        if (!_thingsBoard.Attr_Subscribe(_attCallbacks)) {
-            //Fail subscribing for attributes.
-            return;
-        }
-        _attSubscribed = true;
-    }
-
-    // Check RPC subscription.
-    if (!_rpcSubscribed) {
-        if (!thingsBoard.RPC_Subscribe(_rpcCallbacks, _rpcCallbacksSize)) {
-            // Fail subscribing for RPC.
-            return;
-        }
-        _rpcSubscribed = true;
-    }
-    */
 
     // Check the last submission.
     if (_tLastSent == 0 || (millis() - _tLastSent) > _ttSend) {
@@ -104,6 +86,20 @@ void CFThingsBoardHelper::loop() {
     }
 
     _thingsBoard.loop();
+}
+
+void CFThingsBoardHelper::ATTRSubscribe(const Attr_Callback attrCallback) {
+    if (!_thingsBoard.Attr_Subscribe(attrCallback)) {
+        Logger::warning("Fail subscribing to attributes.");
+        return;
+    }
+}
+
+void CFThingsBoardHelper::RPCSubscribe(const RPC_Callback *callbacks, size_t size) {
+    if (!_thingsBoard.RPC_Subscribe(callbacks, size)) {
+        Logger::warning("Fail subscribing to RPC.");
+        return;
+    }
 }
 
 /**
@@ -170,4 +166,13 @@ void CFThingsBoardHelper::setAttributeValue(String key, int value) {
  */
 void CFThingsBoardHelper::setAttributeValue(String key, String value) {
     _attributes[key] = value;
+}
+
+/**
+ * Define on ThingsBoard connect callback.
+ *
+ * @param onThingsBoardConnectCallback On ThingsBoard connect callback.
+ */
+void CFThingsBoardHelper::setOnThingsBoardConnectCallback(VoidCallback onThingsBoardConnectCallback) {
+    _onThingsBoardConnectCallback = onThingsBoardConnectCallback;
 }

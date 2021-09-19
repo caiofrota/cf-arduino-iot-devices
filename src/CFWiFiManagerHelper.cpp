@@ -176,6 +176,22 @@ String CFWiFiManagerHelper::getParameter(String key) {
 }
 
 /**
+ * Define parameter value with a key.
+ * 
+ * @param key Parameter key.
+ * @return Parameter value.
+ */
+void CFWiFiManagerHelper::setParameter(String key, String value) {
+    for (int i = 0; i < _maxParamsQty; i++) {
+        String foundKey = _wifiManagerParameters[i].getID();
+        if (foundKey == key) {
+            _wifiManagerParameters[i].setValue(value.c_str(), value.length());
+            _saveParameters();
+        }
+    }
+}
+
+/**
  * Get SSID.
  *
  * @return SSID.

@@ -56,6 +56,7 @@ class CFWiFiManagerHelper {
         void loop();                                                            // Loop.
         void setCustomParameters(WiFiManagerParameter* params, int paramsQt);   // Define WiFiManager parameters.
         String getParameter(String key);                                        // Get parameter value from key.
+        void setParameter(String key, String value);                            // Define parameter value with a key.
         String getSSID();                                                       // Get SSID.
         String getLocalIP();                                                    // Get local IP.
         void setOnSaveParametersCallback(const VoidCallback);                   // Define on save parameters callback.
