@@ -68,7 +68,7 @@ void ATTRCallback(const RPC_Data &data) {
     Logger::notice("Attr received.");
 
     // Update attributes.
-    _cfWiFiManager.setParameter("p_device_name", data["p_device_name"]);
+    _cfWiFiManager.setParameter("p_device_name", data["attr_device_name"]);
 }
 
 /**
