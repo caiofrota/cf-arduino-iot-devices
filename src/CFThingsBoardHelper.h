@@ -32,9 +32,9 @@ class CFThingsBoardHelper {
         String _token;                                                          // Device token to connect to ThingsBoard device.
         String _localIP;                                                        // Local IP.
         String _deviceName;                                                     // Device name.
-        long _ttRetry;                                                          // Time between connection attempts.
-        long _ttSend;                                                           // Time between submissions.
-        long _tLastSent;                                                        // Last time data was sent.
+        unsigned long _ttRetry;                                                 // Time between connection attempts.
+        unsigned long _ttSend;                                                  // Time between submissions.
+        unsigned long _tLastSent;                                               // Last time data was sent.
 
         // JSON Data.
         DynamicJsonDocument _data;                                              // JSON telemetry data.
