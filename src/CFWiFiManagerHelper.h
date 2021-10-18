@@ -46,6 +46,7 @@ class CFWiFiManagerHelper {
         void _APCallback(WiFiManager *wifiManager);                             // Callback when AP Mode is connected.
 
         // Available callbacks.
+        VoidCallback _onConfigModeCallback;                                     // On save parameters callback.
         VoidCallback _onSaveParametersCallback;                                 // On save parameters callback.
 
     public:
@@ -57,8 +58,12 @@ class CFWiFiManagerHelper {
         void setCustomParameters(WiFiManagerParameter* params, int paramsQt);   // Define WiFiManager parameters.
         String getParameter(String key);                                        // Get parameter value from key.
         void setParameter(String key, String value);                            // Define parameter value with a key.
+        String getDefaultSSID();                                                // Get default SSID.
+        String getDefaultPassword();                                            // Get default password.
         String getSSID();                                                       // Get SSID.
         String getLocalIP();                                                    // Get local IP.
+        bool isConnected();                                                     // True if WiFi is connected.
+        void setOnConfigModeCallback(const VoidCallback);                       // Define on config mode callback.
         void setOnSaveParametersCallback(const VoidCallback);                   // Define on save parameters callback.
 };
 

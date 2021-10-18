@@ -157,6 +157,9 @@ void CFWiFiManagerHelper::_saveParameters() {
  */
 void CFWiFiManagerHelper::_APCallback(WiFiManager *wifiManager) {
     _wifiIP = WiFi.softAPIP().toString();
+    if (_onConfigModeCallback) {
+        _onConfigModeCallback();
+    }
 }
 
 /**
@@ -192,6 +195,24 @@ void CFWiFiManagerHelper::setParameter(String key, String value) {
 }
 
 /**
+ * Get default SSID.
+ *
+ * @return Default SSID.
+ */
+String CFWiFiManagerHelper::getDefaultSSID() {
+    return _defaultWifiSSID;
+}
+
+/**
+ * Get default password.
+ *
+ * @return Default password.
+ */
+String CFWiFiManagerHelper::getDefaultPassword() {
+    return _defaultWifiPassword;
+}
+
+/**
  * Get SSID.
  *
  * @return SSID.
@@ -207,6 +228,19 @@ String CFWiFiManagerHelper::getSSID() {
  */
 String CFWiFiManagerHelper::getLocalIP() {
     return _wifiIP;
+}
+
+bool CFWiFiManagerHelper::isConnected() {
+    return _wifiConnected;
+}
+
+/**
+ * Define on config mode callback.
+ *
+ * @param callback Callback.
+ */
+void CFWiFiManagerHelper::setOnConfigModeCallback(VoidCallback callback) {
+    _onConfigModeCallback = callback;
 }
 
 /**
