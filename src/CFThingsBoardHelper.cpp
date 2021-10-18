@@ -16,7 +16,7 @@
 CFThingsBoardHelper::CFThingsBoardHelper(String appCode, String appVersion):
         _wifiClient(), _thingsBoard(_wifiClient),
         _ttRetry(60000), _ttSend(60000),
-        _data(64), _attributes(1024),
+        _data(64), _attributes(1024), _TBconnected(false),
         _appCode(appCode), _appVersion(appVersion) {
     
 }
@@ -27,6 +27,7 @@ CFThingsBoardHelper::CFThingsBoardHelper(String appCode, String appVersion):
 void CFThingsBoardHelper::loop() {
     // Check if it's disconnected.
     if (!_thingsBoard.connected()) {
+        _TBconnected = false;
         // Check the last attempt.
         if (_tLastSent == 0 || (millis() - _tLastSent) > _ttRetry) {
             // Connect to ThingsBoard.
@@ -37,6 +38,7 @@ void CFThingsBoardHelper::loop() {
             char serverURL[50]; strcpy(serverURL, _serverURL.c_str());
             char token[50]; strcpy(token, _token.c_str());
             if (_thingsBoard.connect(serverURL, token)) {
+                _TBconnected = true;
                 // Get chip id.
                 char espChipId[6];
                 sprintf(espChipId, "%06X", ESP.getChipId());
@@ -88,6 +90,11 @@ void CFThingsBoardHelper::loop() {
     _thingsBoard.loop();
 }
 
+/**
+ * Subscribe to attr.
+ * 
+ * @param attrCallback Callback method to be called when receive an attr request.
+ */
 void CFThingsBoardHelper::ATTRSubscribe(const Attr_Callback attrCallback) {
     if (!_thingsBoard.Attr_Subscribe(attrCallback)) {
         Logger::warning("Fail subscribing to attributes.");
@@ -95,6 +102,12 @@ void CFThingsBoardHelper::ATTRSubscribe(const Attr_Callback attrCallback) {
     }
 }
 
+/**
+ * Subscribe to RPC.
+ * 
+ * @param callbacks List of callback methods to be called when receive a RPC request.
+ * @param size Quantity of callback methods.
+ */
 void CFThingsBoardHelper::RPCSubscribe(const RPC_Callback *callbacks, size_t size) {
     if (!_thingsBoard.RPC_Subscribe(callbacks, size)) {
         Logger::warning("Fail subscribing to RPC.");
@@ -126,6 +139,13 @@ void CFThingsBoardHelper::setToken(String token) {
  */
 void CFThingsBoardHelper::setLocalIP(String localIP) {
     _localIP = localIP;
+}
+
+/**
+ * True if ThingsBoard is connected.
+ */
+bool CFThingsBoardHelper::isConnected() {
+    return _TBconnected;
 }
 
 /**

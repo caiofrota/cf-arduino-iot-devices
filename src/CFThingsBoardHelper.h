@@ -35,6 +35,7 @@ class CFThingsBoardHelper {
         unsigned long _ttRetry;                                                 // Time between connection attempts.
         unsigned long _ttSend;                                                  // Time between submissions.
         unsigned long _tLastSent;                                               // Last time data was sent.
+        bool _TBconnected;                                                      // Flag that indicates if ThingsBoard is connected.
 
         // JSON Data.
         DynamicJsonDocument _data;                                              // JSON telemetry data.
@@ -46,11 +47,12 @@ class CFThingsBoardHelper {
     public:
         CFThingsBoardHelper(String appCode, String appVersion);                 // Constructor.
         void loop();                                                            // Loop.
-        void ATTRSubscribe(const Attr_Callback callback);
-        void RPCSubscribe(const RPC_Callback *callbacks, size_t size);
+        void ATTRSubscribe(const Attr_Callback callback);                       // Subscribe to attr.
+        void RPCSubscribe(const RPC_Callback *callbacks, size_t size);          // Subscribe to RPC.
         void setServerURL(String serverURL);                                    // Define server URL.
         void setToken(String token);                                            // Define token.
         void setLocalIP(String localIP);                                        // Define device name.
+        bool isConnected();                                                     // True if ThingsBoard is connected.
         void setTelemetryValue(String key, int value);                          // Set telemetry int value.
         void setTelemetryValue(String key, String value);                       // Set telemetry String value.
         void setAttributeValue(String key, int value);                          // Set attribute int value.
