@@ -2,8 +2,8 @@
 #include <Logger.h>
 #include <CFWiFiManagerHelper.h>
 
-WiFiClient wifiClient;
-HTTPClient http;
+WiFiClientSecure wifiClient;
+HTTPClient https;
 
 CFWiFiManagerHelper _cfWiFiManager(3000);
 #define CF_WM_MAX_PARAMS_QTY 4
@@ -15,7 +15,7 @@ WiFiManagerParameter _params[] = {{"p_device_name", "Device Name", _cfWiFiManage
 
 #define PIN_INTERCOM A0
 
-const char *WEBHOOK_BASE = "http://api.callmebot.com/whatsapp.php?";
+const char *WEBHOOK_BASE = "https://api.callmebot.com/whatsapp.php?";
 const char *PHONE = "phone=";
 const char *MESSAGE = "&text=";
 const char *API_KEY = "&apikey=";
@@ -49,14 +49,17 @@ void loop() {
       if (millis() < lastNotificationSent || millis() - lastNotificationSent > NOTIFICATION_DELAY) {
         lastNotificationSent = millis();
         Logger::notice("Voltage change indentified. Sending notification.");
-        http.begin(wifiClient, webhookURL);
-        int httpCode = http.GET();
-        http.end();
-        if (httpCode == 200) {
+        wifiClient.setInsecure();
+        https.begin(wifiClient, webhookURL);
+        int httpCode = https.GET();
+        if (httpCode == HTTP_CODE_OK) {
+          String payload = https.getString();
           Logger::notice("A notification has been sent.");
+          Logger::notice("[HTTPS] Received payload telegram: " + payload);
         } else {
           Logger::notice("Sending notification has failed. Error: " + String(httpCode) + " (" + webhookURL + ")");
         }
+        https.end();
       }
     }
   }
